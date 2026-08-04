@@ -1,0 +1,88 @@
+:root {
+	--text: #6b6375;
+	--text-h: #08060d;
+	--bg: #fff;
+	--border: #e5e4e7;
+	--border-radius: 0.25rem;
+
+	--positive-text: #aa3bff;
+	--positive-bg: rgba(170, 59, 255, 0.1);
+	--positive-border: rgba(170, 59, 255, 0.5);
+	--positive-bg-hover: rgba(170, 59, 255, 0.3);
+
+	/* Negative Palette (Light) */
+	--negative-text: #e11d48;
+	--negative-bg: rgba(225, 29, 72, 0.1);
+	--negative-border: rgba(225, 29, 72, 0.5);
+	--negative-bg-hover: rgba(225, 29, 72, 0.25);
+
+	--gap: 0.5rem;
+	--spacing-small: 1rem;
+
+	--sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+	--heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+	--mono: ui-monospace, Consolas, monospace;
+
+	font: 18px/145% var(--sans);
+	letter-spacing: 0.18px;
+	color-scheme: light dark;
+	color: var(--text);
+	background: var(--bg);
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--text: #9ca3af;
+		--text-h: #f3f4f6;
+		--bg: #16171d;
+		--border: #2e303a;
+
+		--positive-text: #c084fc;
+		--positive-bg: rgba(192, 132, 252, 0.15);
+		--positive-border: rgba(192, 132, 252, 0.5);
+		--positive-bg-hover: rgba(192, 132, 252, 0.3);
+
+		/* Negative Palette (Dark) */
+		--negative-text: #fb7185;
+		--negative-bg: rgba(251, 113, 133, 0.15);
+		--negative-border: rgba(251, 113, 133, 0.5);
+		--negative-bg-hover: rgba(251, 113, 133, 0.3);
+	}
+}
+
+#app {
+	margin: 0 auto;
+
+	@media (min-width: 800px) {
+		max-width: 800px;
+	}
+}
+
+.button {
+	border: 1px solid var(--border);
+	border-radius: var(--border-radius);
+
+	&.positive {
+		background-color: var(--positive-bg);
+		border-color: var(--positive-border);
+		color: var(--positive-text);
+
+		&:hover {
+			background-color: var(--positive-bg-hover);
+		}
+	}
+
+	&.negative {
+		background-color: var(--negative-bg);
+		border-color: var(--negative-border);
+		color: var(--negative-text);
+
+		&:hover {
+			background-color: var(--negative-bg-hover);
+		}
+	}
+}
