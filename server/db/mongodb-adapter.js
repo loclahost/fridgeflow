@@ -32,11 +32,19 @@ export const useMongoDb = (connectionUri) => {
 	};
 
 	const registerUser = async (user) => {
-		return await userCollection().insertOne(user);
+		return await userCollection().insertOne({ ...user, createdAt: new Date() });
 	};
 
 	const findUser = async (user) => {
-		return await userCollection().findOne({ email: user.email });
+		return await userCollection().findOne({ oidcId: user.oidcId });
+	};
+
+	const updateExisitingUser = async (user, googleUser) => {
+		return await userCollection().findOneAndUpdate(
+			{ oidcId: user.oidcId },
+			{ $set: { name: googleUser.name, email: googleUser.email } },
+			{ returnDocument: 'after' },
+		);
 	};
 
 	const getAccessFilter = (listId, user) => {
@@ -45,9 +53,17 @@ export const useMongoDb = (connectionUri) => {
 			accessFilter._id = new ObjectId(listId);
 		}
 		if (user && user._id) {
-			accessFilter.$or = [{ user: new ObjectId(user._id) }, { shared: { $elemMatch: { user: new ObjectId(user._id), allowWrite: true } } }];
+			accessFilter.$or = [
+				{ user: new ObjectId(user._id) },
+				{ shared: { $elemMatch: { user: new ObjectId(user._id), allowWrite: true } } },
+			];
 		}
-		console.log('Access filter for user and list id', user, listId, JSON.stringify(accessFilter, undefined, 2));
+		console.log(
+			'Access filter for user and list id',
+			user,
+			listId,
+			JSON.stringify(accessFilter, undefined, 2),
+		);
 		return accessFilter;
 	};
 
@@ -148,6 +164,7 @@ export const useMongoDb = (connectionUri) => {
 		heartbeat,
 		registerUser,
 		findUser,
+		updateExisitingUser,
 		getLists,
 		createList,
 		renameList,

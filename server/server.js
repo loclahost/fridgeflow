@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { EventEmitter } from 'events';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import { OAuth2Client } from 'google-auth-library';
 import { generateToken, verifyToken } from './middleware/auth.js';
 import { useMongoDb } from './db/mongodb-adapter.js';
 import { ObjectId } from 'mongodb';
@@ -12,11 +12,10 @@ import { ObjectId } from 'mongodb';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const SALT_ROUNDS = 5;
-
 const app = express();
 app.use(express.json());
 
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const mongoDb = useMongoDb(process.env.DB_CONNECTION);
 
 const VALID_ACTIONS = ['CREATE', 'UPDATE', 'DELETE'];
@@ -58,41 +57,42 @@ app.get('/events/:userId', (req, res) => {
 	});
 });
 
-app.post('/register', async (req, res) => {
-	const { email, password } = req.body;
+app.post('/auth/google', async (req, res) => {
+	const { idToken } = req.body;
 
-	if (!email || !password) {
-		return res.status(400).json({ error: 'Email and password are required' });
+	if (!idToken) {
+		return res.status(400).json({ error: 'ID token is required' });
 	}
 
-	const existing = await mongoDb.findUser({ email });
-	if (existing) {
-		console.log(existing);
-		return res.status(409).json({ error: 'Email already registered' });
+	try {
+		const ticket = await googleClient.verifyIdToken({
+			idToken,
+			audience: process.env.GOOGLE_CLIENT_ID,
+		});
+
+		const payload = ticket.getPayload();
+		const { email, sub: oidcId, name } = payload;
+		const googleUser = { email, name, oidcId };
+
+		let user = await mongoDb.findUser(googleUser);
+
+		if (user) {
+			user = await mongoDb.updateExisitingUser(user, googleUser);
+		} else {
+			user = await mongoDb.registerUser(googleUser);
+		}
+
+		const token = generateToken(user);
+
+		res.json({
+			token,
+			validTo: Date.now() + 45 * 60 * 1000,
+			user: { email: user.email, name: user.name },
+		});
+	} catch (error) {
+		console.error('Google authentication error:', error);
+		res.status(401).json({ error: 'Invalid Google token' });
 	}
-
-	const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-	await mongoDb.registerUser({ email, password: hashedPassword });
-
-	res.status(201).json({ message: 'User registered successfully' });
-});
-
-app.post('/login', async (req, res) => {
-	const { email, password } = req.body;
-
-	const user = await mongoDb.findUser({ email });
-	if (!user) {
-		return res.status(401).json({ error: 'Invalid credentials' });
-	}
-
-	const valid = await bcrypt.compare(password, user.password);
-	if (!valid) {
-		return res.status(401).json({ error: 'Invalid credentials' });
-	}
-
-	const token = generateToken(user);
-
-	res.json({ token, validTo: Date.now() + 45 * 60 * 1000 });
 });
 
 app.get('/api/lists', async (req, res) => {
