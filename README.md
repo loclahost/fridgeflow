@@ -1,6 +1,12 @@
 # Simple TODO application
 
-This is a simple TODO application meant for running in a MongoDB and NodeJS environment of choise.
+This is a simple TODO application meant for running in a MongoDB and NodeJS environment of choice. Meant for keeping track of your grocery shopping and such.
+
+# Features
+
+- Login with Google
+- As many lists as you'd like
+- Private lists
 
 # Configuration
 
