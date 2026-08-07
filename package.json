@@ -5,8 +5,9 @@
 	"scripts": {
 		"install-all": "npm install && cd client && npm install",
 		"build-client": "cd client && npm run build",
-		"start": "node server/server.js",
-		"deploy": "npm run build-client && gcloud app deploy"
+		"build": "npm run install-all && npm run build-client",
+		"package": "npm run build && tar -czf release.tgz server package.json package-lock.json",
+		"start": "node server/server.js"
 	},
 	"dependencies": {
 		"dotenv": "^17.4.2",
