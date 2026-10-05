@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { computed, ref, watch } from 'vue';
+import { useLocalStorage } from '@vueuse/core';
 import { getList, removeListItem, updateListItem, createListItem } from '../api/api';
 
 let eventSource = null;
@@ -42,7 +43,7 @@ function findItem(list, itemfId) {
 }
 
 export const useStateStore = defineStore('state', () => {
-	const user = ref({ token: '', validTo: 0 });
+	const user = useLocalStorage('user', { token: '', validTo: 0 });
 	const list = ref([]);
 	const activeEdit = ref(null);
 	const groups = computed(() => {
