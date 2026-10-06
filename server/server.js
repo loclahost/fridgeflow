@@ -3,11 +3,9 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { EventEmitter } from 'events';
-import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import { generateToken, verifyToken } from './middleware/auth.js';
 import { useMongoDb } from './db/mongodb-adapter.js';
-import { ObjectId } from 'mongodb';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,7 +17,6 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const mongoDb = useMongoDb(process.env.DB_CONNECTION);
 
 const VALID_ACTIONS = ['CREATE', 'UPDATE', 'DELETE'];
-const VALID_PROPERTIES = ['label', 'itemType'];
 
 const LIST_USERS = new Map();
 
