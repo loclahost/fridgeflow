@@ -106,6 +106,12 @@ app.post('/api/list/create', async (req, res) => {
 	res.json({ listId }).end();
 });
 
+app.post('/api/list/update', async (req, res) => {
+	const { listId, newLabel } = req.body;
+	await mongoDb.renameList(req.user, listId, newLabel);
+	res.status(200).end();
+});
+
 app.post('/api/list/delete', async (req, res) => {
 	const { listId } = req.body;
 	await mongoDb.deleteList(req.user, listId);

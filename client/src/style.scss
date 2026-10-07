@@ -66,6 +66,15 @@
 	border: 1px solid var(--border);
 	border-radius: var(--border-radius);
 
+	&.text {
+		background-color: transparent;
+		border: none;
+		&:hover {
+			color: var(--positive-text);
+			background-color: var(--positive-bg-hover);
+		}
+	}
+
 	&.positive {
 		background-color: var(--positive-bg);
 		border-color: var(--positive-border);

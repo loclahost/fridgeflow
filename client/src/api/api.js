@@ -49,6 +49,10 @@ export function deleteList(listId) {
 	return fetchWithAuth('/api/list/delete/', 'POST', { listId });
 }
 
+export function updateList(listId, listLabel) {
+	return fetchWithAuth('/api/list/update', 'POST', { listId, newLabel: listLabel });
+}
+
 export function getList(listId) {
 	return fetchWithAuth('/api/list/' + listId);
 }

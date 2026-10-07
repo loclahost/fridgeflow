@@ -4,7 +4,11 @@
 			<button @click="$router.push('/lists')" class="button" type="button" aria-label="Tillbaka till listor">
 				<ChevronLeft />
 			</button>
-			<span>{{ stateStore.list.label }}</span>
+
+			<button type="button" class="button text" @click.stop="() => stateStore.openListEditor(stateStore.list._id, stateStore.list.label)">
+				<h1>{{ stateStore.list.label }}</h1>
+			</button>
+
 			<button @click.stop="() => stateStore.openItemEditor(stateStore.list._id)" class="button positive" type="button" aria-label="Lägg till vara">
 				<ListPlus />
 			</button>
@@ -31,13 +35,10 @@
 			flex-direction: row;
 			align-items: center;
 			justify-content: space-between;
-		}
 
-		.add-wrapper {
-			display: flex;
-			gap: var(--gap);
-			input {
-				flex: 1;
+			h1 {
+				margin-top: 0.3rem;
+				margin-bottom: 0.3rem;
 			}
 		}
 	}

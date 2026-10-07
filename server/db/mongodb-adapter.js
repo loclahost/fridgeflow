@@ -84,13 +84,13 @@ export const useMongoDb = (connectionUri) => {
 		return (await listCollection().insertOne(newList)).insertedId;
 	};
 
-	const renameList = async (user, list, newLabel) => {
-		const filter = getAccessFilter(list._id, user);
+	const renameList = async (user, listId, newLabel) => {
+		const filter = getAccessFilter(listId, user);
 		const updateDoc = {
 			$set: { label: newLabel },
 		};
 
-		const result = await listsCollection.updateOne(filter, updateDoc);
+		const result = await listCollection().updateOne(filter, updateDoc);
 		return result.matchedCount > 0;
 	};
 

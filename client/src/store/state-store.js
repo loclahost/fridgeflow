@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref, watch } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
-import { getList, removeListItem, updateListItem, createListItem } from '../api/api';
+import { getList as getListData, removeListItem, updateListItem, createListItem, updateList } from '../api/api';
 
 let eventSource = null;
 
@@ -23,7 +23,7 @@ const setupEventListener = (token) => {
 			if (data.eventOrigin == token) {
 				console.log('Ignoring my own update');
 			} else {
-				useStateStore().updateList(data.listId);
+				useStateStore().getList(data.listId);
 			}
 		} catch (err) {
 			console.log('Initialt meddelande eller fel format:', event.data);
@@ -94,8 +94,14 @@ export const useStateStore = defineStore('state', () => {
 		activeEdit.value = null;
 	}
 
-	async function updateList(listId) {
-		list.value = await getList(listId);
+	async function getList(listId) {
+		list.value = await getListData(listId);
+	}
+
+	async function renameList(newLabel) {
+		console.log('Renaming list ' + list.value.label + ' to ' + newLabel);
+		await updateList(list.value._id, newLabel);
+		list.value.label = newLabel;
 	}
 
 	function createItem(newItem) {
@@ -125,7 +131,8 @@ export const useStateStore = defineStore('state', () => {
 		groups,
 		activeEdit,
 		isUserLoggedIn,
-		updateList,
+		getList,
+		renameList,
 		createItem,
 		removeItem,
 		updateItem,

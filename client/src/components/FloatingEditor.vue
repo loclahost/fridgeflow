@@ -74,6 +74,8 @@
 			if (!localData.value.listId) {
 				const { listId: newListId } = await createList(localData.value.label);
 				router.push('/lists/' + newListId);
+			} else {
+				await store.renameList(localData.value.label);
 			}
 		}
 
